@@ -1,7 +1,7 @@
 {
     "app-id" : "io.github.OkuBrowser.oku",
     "runtime" : "org.gnome.Platform",
-    "runtime-version" : "48",
+    "runtime-version" : "51",
     "sdk" : "org.gnome.Sdk",
     "sdk-extensions" : [
         "org.freedesktop.Sdk.Extension.rust-stable"
@@ -31,7 +31,8 @@
         "append-path" : "/usr/lib/sdk/rust-stable/bin",
         "env" : {
             "RUSTFLAGS" : "--remap-path-prefix =../",
-            "CARGO_HOME" : "/run/build/oku/cargo"
+            "CARGO_HOME" : "/run/build/oku/cargo",
+            "CARGO_NET_OFFLINE": "true"
         }
     },
     "modules" : [
@@ -46,8 +47,7 @@
                 {
                     "type": "git",
                     "url": "https://github.com/libfuse/libfuse.git",
-                    "tag": "fuse-3.16.1",
-                    "commit": "1f0dfae4084577997291bb0e1b94aeff89a5e70f"
+                    "tag": "fuse-3.18.3"
                 }
             ]
         },
@@ -57,16 +57,16 @@
             "build-commands" : [
                 "install -Dm755 fusermount-wrapper.sh /app/bin/fusermount3",
                 "./prebuild.sh",
-                "cargo --offline fetch --manifest-path Cargo.toml --verbose",
-                "cargo --offline build --release --verbose",
+                "install -Dm0644 cargo/config .cargo/config.toml",
+                "cargo --frozen build --release --verbose",
                 "install -Dm755 ./target/release/oku -t /app/bin/",
                 "install -Dm755 ./resources.gresource -t /app/bin/",
-                "install -Dm644 ./data/${FLATPAK_ID}.metainfo.xml -t /app/share/metainfo/",
-                "install -Dm644 ./data/${FLATPAK_ID}.desktop -t /app/share/applications/",
+                "install -Dm644 ./oku/data/${FLATPAK_ID}.metainfo.xml -t /app/share/metainfo/",
+                "install -Dm644 ./oku/data/${FLATPAK_ID}.desktop -t /app/share/applications/",
                 "mkdir -p /app/share/icons/hicolor",
-                "cp -avr ./data/hicolor /app/share/icons/",
-                "install -Dm644 ./README.md -t /app/share/doc/oku/",
-                "install -Dm644 ./COPYING -t /app/share/doc/oku/"
+                "cp -avr ./oku/data/hicolor /app/share/icons/",
+                "install -Dm644 ./oku/README.md -t /app/share/doc/oku/",
+                "install -Dm644 ./oku/COPYING -t /app/share/doc/oku/"
             ],
             "sources" : [
                 {
@@ -76,7 +76,7 @@
                 {
                     "type" : "git",
                     "url" : "https://github.com/OkuBrowser/oku.git",
-                    "tag": "v0.1.1"
+                    "commit": "d08841215bebc5033700eb9e377ec689f8768978"
                 },
                 "cargo-sources.json"
             ]
